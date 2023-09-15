@@ -21,26 +21,24 @@ class createChordNetwork:
             next_node_pointer = min(self.DHT.keys())
         return next_node_pointer
     
-    def find_predecessor(self, node):
-        self.DHT.keys().sort()
-        maxm = max(self.DHT.keys())
-        minm = min(self.DHT.keys())
+    # Tested
+    def find_predecessor(self, node):               
+        sorted_keys = sorted(self.DHT.keys())
+        # sorted_keys = sorted(keys)
+        maxm = max(sorted_keys)
+        minm = min(sorted_keys)
         if node == minm:
             predecessor_node = maxm
         else:
-            predecessor_node = self.DHT.keys()[node - 1]
+            index = sorted_keys.index(node)
+            predecessor_node = sorted_keys[index - 1]
         return predecessor_node
 
-    def is_file_present(self, left, key, right):
-        if left == right:
-            return True 
-        if left < right:
-            return left < key <= right
-        return (left < key <= self.space - 1) or (0 <= key <= right)
-    
+    # Tested
     def get_dht_size(self):
         return len(self.DHT)
 
+    # Tested
     def print_nodes(self):
         if not self.DHT:
             print("No Nodes in the network!")
@@ -50,6 +48,7 @@ class createChordNetwork:
             print(node, ",", end = " ")
         print("}")
 
+    # Tested
     def join(self, node):
         if node < 0 or node >= self.space:
             print(f"Invalid Node ID. (Node ID must be in the range[0, {self.space - 1}])")
@@ -66,6 +65,7 @@ class createChordNetwork:
         self.DHT[node] = finger_table
         self.update_all_finger_tables()
 
+    # Tested
     def leave(self, node):
         if node not in self.DHT:
             print(f"Node {node} does not exist.")
@@ -74,6 +74,7 @@ class createChordNetwork:
         del self.DHT[node]
         self.update_all_finger_tables()
 
+    # Tested
     def print_finger_tables(self):
         if not self.DHT:
             print("Network is empty!")
@@ -85,45 +86,56 @@ class createChordNetwork:
             for i, (key, successor) in enumerate(finger_table):
                 print(f"\t{i}\t{key}\t{successor}")
 
-    def search(self, file_index, start_node):
+    # Tested
+    def find_closest_preceding_node(self, keyID):
+        keys = list(self.DHT.keys())
+        keys.sort()
+        if keyID < min(keys):
+            return max(keys)
+        elif keyID > max(keys):
+            return max(keys)
+        else:
+            for i in range(len(keys)):
+                if keys[i] < keyID < keys[i+1]:
+                    return keys[i]
+        return -1
+            
+    # Tested
+    def is_key_present(self, left, key, right):
+        if left == right:
+            return key == left
+        if left < right:
+            return left < key <= right
+        return (left < key <= self.space - 1) or (0 <= key <= right)
+    
+    def search(self, keyID, start_node):
+        keyID = hash(keyID)
         if start_node not in self.DHT:
             print("Start node does not exist.")
             return -1
-        
-        max_ = -1
-        for key in self.DHT.keys():
-            if key < start_node:
-                max_ = key
-            else:
-                max_ = -1
-        predecessor_node = max_
-        if predecessor_node == -1:
-            predecessor_node = max(self.DHT.keys())
-        if self.is_file_present(predecessor_node, file_index, start_node):
-            print(start_node)
-            return start_node
-        
-        min_ = self.space + 1
-        for key in self.DHT.keys():
-            if key > start_node:
-                min_ = key
-            else:
-                min_ = self.space + 1
-        successor_node = min_
-        if successor_node is self.space + 1:
-            successor_node = min(self.DHT.keys())
-        if self.is_file_present(start_node, file_index, successor_node):
-            print(f"{start_node} -> ", end = "")
+
+        # predecessor_node = self.find_predecessor(start_node)
+        successor_node = self.find_successor(start_node)
+        if self.is_key_present(start_node , keyID, successor_node):
+            print(f"{start_node} -> {successor_node}", end = "")
             return successor_node
-        
-        finger_table = self.DHT[start_node]
-        for i in range(self.m - 1, -1, -1):
-            if self.is_file_present(start_node, finger_table[i][i], file_index):
+        else:
+            finger_table = self.DHT[start_node]
+            # finger_table.reverse()
+            if finger_table[self.m - 1][1] > keyID:
+                for i, (entry, successor) in enumerate(finger_table):
+                    if self.is_key_present(start_node, keyID, successor):
+                        print(f"{start_node} -> ", end = "")
+                        return self.search(keyID, self.find_predecessor(successor))
+            elif finger_table[self.m - 1][1] == self.find_closest_preceding_node(keyID):
                 print(f"{start_node} -> ", end = "")
-                return self.search(file_index, finger_table[i][1])
-            
-        return -1
-    
+                return self.search(keyID, self.find_closest_preceding_node(keyID))
+            else:
+                print(f"{start_node} -> ", end = "")
+                return self.search(keyID, finger_table[self.m - 1][1])
+        # return -1
+
+# Tested
 def input_network(N):
     while(True):
         print()
@@ -140,10 +152,10 @@ def input_network(N):
             node_id = int(input("Enter Node ID: "))
             N.leave(node_id)
         elif choice == 3:
-            file_id = int(input("Enter Node ID to search for: "))
+            key_id = int(input("Enter Node ID to search for: "))
             node_id = int(input("Enter Node ID to begin search from: "))
             print("Search Path: ", end = "")
-            N.search(file_id, node_id)
+            N.search(key_id, node_id)
         elif choice == 4:
             N.print_finger_tables()
         elif choice == 5:
@@ -151,13 +163,21 @@ def input_network(N):
         else:
             print("Invalid Choice.")
 
-        print()
+        # print()
         print("----------------------------------------------------------------")
         print()
 
 def main():
-    m = int(input("Number of Bits to be allocated for search space(m): "))
+    m = int(input("Number of Bits to be allocated for search space (m): "))
     input_network(createChordNetwork(m))
+
+    # Testing
+    # t= createChordNetwork(3)
+    # keys = [0, 1, 3, 5]
+    # print(t.find_predecessor(0, keys))
+    # print(t.get_dht_size())
+    # print(t.is_key_present(5, 7, 3))
+    # print(t.find_closest_preceding_node(6, keys))
 
 if __name__ == "__main__":
     main()

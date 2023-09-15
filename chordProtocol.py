@@ -14,25 +14,16 @@ class createChordNetwork:
 
     # successor is the next node in network
     def find_successor(self, node):
-        # sorted_keys = sorted(self.DHT.keys())
-        # # sorted_keys = sorted(keys)
-        # maxm = max(sorted_keys)
-        # minm = min(sorted_keys)
-        # if node == maxm:
-        #     successor_node = minm
-        # else:
-        #     index = sorted_keys.index(node)
-        #     successor_node = sorted_keys[index + 1]
-        # return successor_node
+        sorted_keys = sorted(self.DHT.keys())
         
         next_node_pointer = None
-        for key in sorted(self.DHT.keys()):
+        for key in sorted_keys:
             if key > node:
                 next_node_pointer = key
                 break
 
         if next_node_pointer is None:
-            next_node_pointer = min(self.DHT.keys())
+            next_node_pointer = min(sorted_keys)
         return next_node_pointer
     
     # Tested
@@ -101,8 +92,8 @@ class createChordNetwork:
                 print(f"\t{i}\t{key}\t{successor}")
 
     # Tested
-    def find_closest_preceding_node(self, keyID):
-        keys = list(self.DHT.keys())
+    def find_closest_preceding_node(self, keyID, keys):
+        # keys = list(self.DHT.keys())
         keys.sort()
         if keyID < min(keys):
             return max(keys)
@@ -114,18 +105,19 @@ class createChordNetwork:
                     return keys[i]
         return -1
 
-    # def find_closest_succeeding_node(self, keyID):
-    #     keys = list(self.DHT.keys())
-    #     keys.sort()
-    #     if keyID < min(keys):
-    #         return min(keys)
-    #     elif keyID > max(keys):
-    #         return min(keys)
-    #     else:
-    #         for i in range(len(keys)):
-    #             if keys[i] < keyID < keys[i+1]:
-    #                 return keys[i+1]
-    #     return -1
+    #Tested
+    def find_closest_succeeding_node(self, keyID):
+        keys = list(self.DHT.keys())
+        keys.sort()
+        if keyID < min(keys):
+            return min(keys)
+        elif keyID > max(keys):
+            return min(keys)
+        else:
+            for i in range(len(keys)):
+                if keys[i] < keyID < keys[i+1]:
+                    return keys[i+1]
+        return -1
     
     # Tested
     def is_key_present(self, left, key, right):
@@ -147,20 +139,17 @@ class createChordNetwork:
             print(f"{start_node} -> {successor_node}", end = "")
             return successor_node
         else:
-            finger_table = self.DHT[start_node]
-            # finger_table.reverse()
-            if finger_table[self.m - 1][1] > keyID:
-                for i, (entry, successor) in enumerate(finger_table):
-                    if self.is_key_present(start_node, keyID, successor):
-                        print(f"{start_node} -> ", end = "")
-                        return self.search(keyID, self.find_predecessor(successor))
-            elif finger_table[self.m - 1][1] == self.find_closest_preceding_node(keyID):
-                print(f"{start_node} -> ", end = "")
-                return self.search(keyID, self.find_closest_preceding_node(keyID))
+            destination_node = self.find_closest_succeeding_node(keyID)
+            if start_node == destination_node:
+                print(f"{start_node}", end = "")
+                return
             else:
-                print(f"{start_node} -> ", end = "")
-                return self.search(keyID, finger_table[self.m - 1][1])
-        return -1
+                finger_table = self.DHT[start_node]
+                keys = []
+                for i, (entry, successor) in enumerate(finger_table):
+                    keys.append(successor)
+                    print(f"{start_node} -> ", end = "")
+                    return self.search(keyID, self.find_closest_preceding_node(keyID, keys))
 
 # Tested
 def input_network(N):
@@ -200,11 +189,13 @@ def main():
 
     # Testing
     # t= createChordNetwork(3)
-    # keys = [0, 1, 3, 5]
-    # print(t.find_predecessor(0, keys))
+    # keys = [1, 3, 5]
+    # print(t.find_predecessor(5, keys))
+    # print(t.find_successor(4, keys))
     # print(t.get_dht_size())
     # print(t.is_key_present(5, 7, 3))
     # print(t.find_closest_preceding_node(6, keys))
+    # print(t.find_closest_succeeding_node(0, keys))
 
 if __name__ == "__main__":
     main()

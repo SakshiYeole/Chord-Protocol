@@ -1,5 +1,3 @@
-# This is the comment
-
 class createChordNetwork:
     # create a network with m as no of bits
     def __init__(self, m) -> None:
@@ -16,7 +14,23 @@ class createChordNetwork:
 
     # successor is the next node in network
     def find_successor(self, node):
-        next_node_pointer = next((key for key in sorted(self.DHT.keys()) if key > node), None)
+        # sorted_keys = sorted(self.DHT.keys())
+        # # sorted_keys = sorted(keys)
+        # maxm = max(sorted_keys)
+        # minm = min(sorted_keys)
+        # if node == maxm:
+        #     successor_node = minm
+        # else:
+        #     index = sorted_keys.index(node)
+        #     successor_node = sorted_keys[index + 1]
+        # return successor_node
+        
+        next_node_pointer = None
+        for key in sorted(self.DHT.keys()):
+            if key > node:
+                next_node_pointer = key
+                break
+
         if next_node_pointer is None:
             next_node_pointer = min(self.DHT.keys())
         return next_node_pointer
@@ -99,7 +113,20 @@ class createChordNetwork:
                 if keys[i] < keyID < keys[i+1]:
                     return keys[i]
         return -1
-            
+
+    # def find_closest_succeeding_node(self, keyID):
+    #     keys = list(self.DHT.keys())
+    #     keys.sort()
+    #     if keyID < min(keys):
+    #         return min(keys)
+    #     elif keyID > max(keys):
+    #         return min(keys)
+    #     else:
+    #         for i in range(len(keys)):
+    #             if keys[i] < keyID < keys[i+1]:
+    #                 return keys[i+1]
+    #     return -1
+    
     # Tested
     def is_key_present(self, left, key, right):
         if left == right:
@@ -133,7 +160,7 @@ class createChordNetwork:
             else:
                 print(f"{start_node} -> ", end = "")
                 return self.search(keyID, finger_table[self.m - 1][1])
-        # return -1
+        return -1
 
 # Tested
 def input_network(N):
@@ -163,9 +190,9 @@ def input_network(N):
         else:
             print("Invalid Choice.")
 
-        # print()
-        print("----------------------------------------------------------------")
         print()
+        print("----------------------------------------------------------------")
+        # print()
 
 def main():
     m = int(input("Number of Bits to be allocated for search space (m): "))

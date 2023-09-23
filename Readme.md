@@ -2,7 +2,7 @@
 
 ---
 
-## Implementation of Choed Protocol
+## Implementation of Chord Protocol
 ## Following are my details for assignment submission:
 <p>Name: &nbsp;&nbsp;&nbsp;&nbsp;Sakshi Shashikant Yeole</p>
 <p>Roll No.: &nbsp;20CS01047</p>

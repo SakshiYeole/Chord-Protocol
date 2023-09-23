@@ -4,7 +4,7 @@
 
 ## Implementation of Choed Protocol
 ## Following are my details for assignment submission:
-<p>Name: &nbsp;&nbsp;&nbsp;&nbsp;Sakshi Shashikant Yeole2</p>
+<p>Name: &nbsp;&nbsp;&nbsp;&nbsp;Sakshi Shashikant Yeole</p>
 <p>Roll No.: &nbsp;20CS01047</p>
 <p>Semester: &nbsp;7th</p>
 <p>Year of study: &nbsp;4th year</p>
@@ -20,37 +20,37 @@
 ## Problem Statement
 Implement Chord routing protocol for P2P Networks. Your implementation must include Key Look up, Node-join/leave with stabilization. Analyze the complexity of your implementation. Write a report on security issues of Chord protocol.
 
-    <details>
-    <summary>Details:</summary>
+<details>
+<summary>Details:</summary>
 
-    <p>Give input the number of bits for the Chord Network</p>
+<p>Give input the number of bits for the Chord Network</p>
 
-    </details>
+</details>
 
 ## Understanding the codebase
 <p>The file consists of many functions, lets walk through one after another.</p>
 
-1. update_all_finger_tables:
+1. ***update_all_finger_tables***:
    
-   <p>This method updates the finger tables for all nodes in the network. It iterates through all nodes ('n' iterations), and for each node, it updates 'm' finger table entries by calling self.find_successor.</p>
+   <p>This method updates the finger tables for all nodes in the network. It iterates through all nodes ('n' iterations), and for each node, it updates 'm' finger table entries by calling *self.find_successor*.</p>
 
-2. find_successor:
+2. ***find_successor***:
    
    <p>This method finds the successor of a given node. It performs a binary search on the sorted keys of the DHT dictionary to find the successor.</p>
 
-3. find_predecessor:
+3. ***find_predecessor***:
    <p>This method finds the predecessor of a given node. It also performs a binary search on the sorted keys of the DHT dictionary.</p>
 
-4. get_dht_size, print_nodes, join, leave, print_finger_tables:
+4. ***get_dht_size, print_nodes, join, leave, print_finger_tables***:
    <p>These methods involve simple operations on the DHT or printing nodes and finger tables.</p>
 
-5. find_closest_preceding_node, find_closest_succeeding_node, is_key_present, search:
+5. ***find_closest_preceding_node, find_closest_succeeding_node, is_key_present, search***:
     <p>These methods are used for searching in the Chord network and have time complexity proportional to the number of nodes in the network and the number of bits (m)</p>
 
-6. input_network (user interaction function):
+6. ***input_network*** (user interaction function):
     <p>This function allows the user to interact with the Chord network, performing operations like joining, leaving, searching, and displaying finger tables. The time complexity of Chord network operations depends on the operation type and Chord method called.</p>
 
-7. main:
+7. ***main***:
     <p>The main function initializes the Chord network based on user input for the number of bits (m) and then calls input_network for user interaction.</p>
 
 
